@@ -6,20 +6,19 @@ pygame.init()
 WIDTH = 600
 HEIGHT = 600
 LINES_WIDTH = 2 # линии разделения (толщина)
-# colors
-BG_COLOR = (255, 255, 255) # цвет фона
-LINES_COLOR = (150, 150, 150) # цвет линий разделения
-
 BOARD_ROWS = 10 # количество строк
 BOARD_COLS = 10 # количество столбцов
+SQUARE_SIZE = WIDTH // BOARD_COLS
 
-CIRCLE_COLOR = (0, 255, 0)
 CIRCLE_RADIUS = 20 # радиус круга
 CIRCLE_WIDTH = 5 # толщина круга
-
-CROSS_COLOR = (0, 0, 255)
 CROSS_WIDTH = 7
 SPACE = 12
+
+BG_COLOR = (255, 255, 255) # цвет фона
+LINES_COLOR = (150, 150, 150) # цвет линий разделения
+CIRCLE_COLOR = (0, 255, 0)
+CROSS_COLOR = (0, 0, 255)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Обратные крестики нолики')
@@ -110,7 +109,7 @@ while True:
 
             if available_square(clicked_row, clicked_col):
                 mark_square(clicked_row, clicked_col, player)
-                check_win(player)
+                #check_win(player)
                 player = 1 if player == 2 else 2
                 draw_figures()
 
