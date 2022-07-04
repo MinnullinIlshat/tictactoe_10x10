@@ -28,10 +28,10 @@ screen.fill(BG_COLOR)
 board = np.zeros((BOARD_ROWS, BOARD_COLS)) # таблица из нулей
 
 def draw_lines():
-    for i in range(60, 601, 60):
-        pygame.draw.line(screen, LINES_COLOR, (i, 0), (i, 600), LINES_WIDTH)
-    for i in range(60, 601, 60):
-        pygame.draw.line(screen, LINES_COLOR, (0, i), (600, i), LINES_WIDTH)
+    for i in range(SQUARE_SIZE, WIDTH + 1, SQUARE_SIZE):
+        pygame.draw.line(screen, LINES_COLOR, (i, 0), (i, HEIGHT), LINES_WIDTH)
+    for i in range(SQUARE_SIZE, HEIGHT + 1, SQUARE_SIZE):
+        pygame.draw.line(screen, LINES_COLOR, (0, i), (WIDTH, i), LINES_WIDTH)
 
 def draw_figures():
     for row in range(BOARD_ROWS):
