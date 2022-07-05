@@ -1,5 +1,6 @@
 import pygame, sys
 import numpy as np
+import random
 
 WIDTH = 600
 HEIGHT = 600
@@ -66,60 +67,65 @@ def all_the_same(values):
     # проверяет все ли элементы в списке одинаковые
     return len(set(values)) == 1
 
-def check_vertical_combo(player):
+def check_vertical_combo(player, test):
     for row in range(BOARD_ROWS - 5):
         for col in range(BOARD_COLS):
             if board[row][col] != player:
                 continue
             values = [board[row+i][col] for i in range(5)]
             if all_the_same(values):
-                draw_vertical_winning_line(row, col, player)
+                if not test:
+                    draw_vertical_winning_line(row, col, player)
                 return True 
     return False
 
-def check_horizontal_combo(player):
+def check_horizontal_combo(player, test):
     for col in range(BOARD_COLS - 5):
         for row in range(BOARD_ROWS):
             if board[row][col] != player:
                 continue
             values = [board[row][col+i] for i in range(5)]
             if all_the_same(values):
-                draw_horizontal_winning_line(row, col, player)
+                if not test:
+                    draw_horizontal_winning_line(row, col, player)
                 return True 
-    return True
+    return False
             
 
-def check_asc_diagonal(player):
-    for row in range(5, BOARD_ROWS):
-        for col in range(BOARD_COLS - 5):
+def check_asc_diagonal(player, test):
+    """проверяет пять в ряд по диагонали"""
+    for row in range(4, BOARD_ROWS):
+        for col in range(BOARD_COLS - 4):
             if board[row][col] != player:
                 continue 
-            values = [board[row+i][col-i] for i in range(5)]
+            values = [board[row-i][col+i] for i in range(5)]
             if all_the_same(values):
-                draw_asc_diaginal(row, col, player)
+                if not test:
+                    draw_asc_diagonal(row, col, player)
                 return True 
     return False
 
-def check_desc_diagonal(player):
+def check_desc_diagonal(player, test):
     for row in range(BOARD_ROWS - 5):
         for col in range(BOARD_COLS - 5):
             if board[row][col] != player:
                 continue 
             values = [board[row+i][col+i] for i in range(5)]
             if all_the_same(values):
-                draw_desc_diagonal(row, col, player)
+                if not test:
+                    draw_desc_diagonal(row, col, player)
                 return True
     return False 
 
-def check_win(player):
+def check_win(player, test=False):
     """проверяет есть ли комбинации для победы"""
     global game_over
-    if any((check_vertical_combo(player),
-        check_horizontal_combo(player),
-        check_asc_diagonal(player),
-        check_desc_diagonal(player),)):
+    if any((check_vertical_combo(player, test),
+        check_horizontal_combo(player, test),
+        check_asc_diagonal(player, test),
+        check_desc_diagonal(player, test),)) and not test:
         game_over = True
-    else: return False 
+    else: return False
     return True 
 
 def draw_vertical_winning_line(row, col, player):
@@ -160,6 +166,67 @@ draw_lines()
 player = 1
 game_over = False
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+computer move
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+def comp_move(player):
+    without_neighbors = get_without_neighbors(player)
+    if without_neighbors:
+        return random.choice(without_neighbors)
+    
+
+def get_available_squares():
+    """возвращает все свободные ячейки"""
+    result = []
+    for col in range(BOARD_COLS):
+        for row in range(BOARD_ROWS):
+            if board[row][col] == 0:
+                result.append((row, col))
+    return result 
+
+def get_neighbors(row_col):
+    """возвращает список координат всех соседних клеток"""
+    row, col = row_col
+    neighbors = []
+    if row > 0:
+        neighbors.append((row-1, col))
+        if col > 0:
+            neighbors.append((row-1, col-1))
+        if col < BOARD_COLS - 1:
+            neighbors.append((row-1, col+1))
+    if row < BOARD_ROWS - 1:
+        neighbors.append((row+1, col))
+        if col > 0:
+            neighbors.append((row+1, col-1))
+        if col < BOARD_COLS - 1:
+            neighbors.append((row+1, col+1))
+    if col > 0:
+        neighbors.append((row, col-1))
+    if col < BOARD_COLS - 1:
+        neighbors.append((row, col+1))
+    return neighbors
+
+def is_match(player, row_col):
+    """проверяет равна ли ячейка игроку"""
+    row, col  = row_col 
+    return board[row][col] == player
+
+def have_neighbors(row_col, player):
+    """проверяет имеет ли ячейка одинаковых соседей"""
+    neighbors = [i for i in get_neighbors(row_col) if is_match(player, i)]
+    return len(neighbors) > 0
+
+def get_without_neighbors(player):
+    """возвращает список координат которые не имеют соседей"""
+    without_neighbors = []
+    available_squares = get_available_squares()
+    for row_col in available_squares:
+        if not have_neighbors(row_col, player):
+            without_neighbors.append(row_col)
+    return without_neighbors
+
 # основной цикл
 while True:
     for event in pygame.event.get():
@@ -176,9 +243,16 @@ while True:
 
             if available_square(clicked_row, clicked_col):
                 mark_square(clicked_row, clicked_col, player)
-                #check_win(player)
-                player = 1 if player == 2 else 2
+                check_win(player)
+                player = 1 if player == 2 else 2            
                 draw_figures()
+                available_squares = get_available_squares()
+                if available_squares:
+                    x, y = comp_move(player)
+                    mark_square(x, y, player)
+                    check_win(player)
+                    player = 1 if player == 2 else 2
+                    draw_figures()
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
