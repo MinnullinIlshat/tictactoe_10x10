@@ -123,8 +123,10 @@ def check_win(player, test=False):
     if any((check_vertical_combo(player, test),
         check_horizontal_combo(player, test),
         check_asc_diagonal(player, test),
-        check_desc_diagonal(player, test),)) and not test:
-        game_over = True
+        check_desc_diagonal(player, test),)):
+        if not test:
+            game_over = True
+            game_over_screen(player)
     else: return False
     return True 
 
@@ -166,16 +168,32 @@ draw_lines()
 player = 1
 game_over = False
 
+def game_over_screen(player):
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    message = 'WON!' if player == 2 else 'LOSE!'
+    text = font.render(message + ' Press \'R\' to restart', True, CIRCLE_COLOR, CROSS_COLOR)
+    textRect = text.get_rect()
+    textRect.center = (WIDTH// 2, HEIGHT//2)
+    screen.blit(text, textRect)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 computer move
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-def comp_move(player):
+def comp_move(player, available_squares):
+    """подбирает оптимальный ход"""
     without_neighbors = get_without_neighbors(player)
     if without_neighbors:
         return random.choice(without_neighbors)
-    
+    no_lose_squares = []
+    for row, col in available_squares:
+        board[row][col] = player
+        if not check_win(player, test=True):
+            no_lose_squares.append((row, col))
+        board[row][col] = 0
+    if no_lose_squares:
+        return random.choice(no_lose_squares)
+    return random.choice(available_squares)
 
 def get_available_squares():
     """возвращает все свободные ячейки"""
@@ -248,7 +266,7 @@ while True:
                 draw_figures()
                 available_squares = get_available_squares()
                 if available_squares:
-                    x, y = comp_move(player)
+                    x, y = comp_move(player, available_squares)
                     mark_square(x, y, player)
                     check_win(player)
                     player = 1 if player == 2 else 2
