@@ -68,7 +68,7 @@ def all_the_same(values):
     return len(set(values)) == 1
 
 def check_vertical_combo(player, test):
-    for row in range(BOARD_ROWS - 5):
+    for row in range(BOARD_ROWS - 4):
         for col in range(BOARD_COLS):
             if board[row][col] != player:
                 continue
@@ -80,7 +80,7 @@ def check_vertical_combo(player, test):
     return False
 
 def check_horizontal_combo(player, test):
-    for col in range(BOARD_COLS - 5):
+    for col in range(BOARD_COLS - 4):
         for row in range(BOARD_ROWS):
             if board[row][col] != player:
                 continue
@@ -106,8 +106,8 @@ def check_asc_diagonal(player, test):
     return False
 
 def check_desc_diagonal(player, test):
-    for row in range(BOARD_ROWS - 5):
-        for col in range(BOARD_COLS - 5):
+    for row in range(BOARD_ROWS - 4):
+        for col in range(BOARD_COLS - 4):
             if board[row][col] != player:
                 continue 
             values = [board[row+i][col+i] for i in range(5)]
