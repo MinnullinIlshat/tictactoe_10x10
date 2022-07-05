@@ -123,24 +123,28 @@ def check_win(player):
     return True 
 
 def draw_vertical_winning_line(row, col, player):
-    color = CROSS_COLOR if player == 1 else CIRCLE_COLOR
+    color = CROSS_COLOR if player == 2 else CIRCLE_COLOR
     start = (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE)
     end = (start[0], start[1] + SQUARE_SIZE * 5)
     pygame.draw.line(screen, color, start, end, 15)
     
 def draw_horizontal_winning_line(row, col, player):
-    color = CROSS_COLOR if player == 1 else CIRCLE_COLOR
+    color = CROSS_COLOR if player == 2 else CIRCLE_COLOR
     start = (col * SQUARE_SIZE, row * SQUARE_SIZE + SQUARE_SIZE//2)
     end = (start[0] + SQUARE_SIZE * 5, start[1])
     pygame.draw.line(screen, color, start, end, 15)
 
-def draw_asc_diaginal(row, col, player):
-    color = CROSS_COLOR if player == 1 else CIRCLE_COLOR
-    
+def draw_asc_diagonal(row, col, player):
+    color = CROSS_COLOR if player == 2 else CIRCLE_COLOR
+    start = (col * SQUARE_SIZE, (row+1) * SQUARE_SIZE)
+    end = ((col+5) * SQUARE_SIZE, (row-4) * SQUARE_SIZE)
+    pygame.draw.line(screen, color, start, end, SQUARE_SIZE//4)
 
 def draw_desc_diagonal(row, col, player):
-    color = CROSS_COLOR if player == 1 else CIRCLE_COLOR
-    pass 
+    color = CROSS_COLOR if player == 2 else CIRCLE_COLOR
+    start = (col * SQUARE_SIZE, row * SQUARE_SIZE)
+    end = ((col+5) * SQUARE_SIZE, (row+5)*SQUARE_SIZE)
+    pygame.draw.line(screen, color, start, end, SQUARE_SIZE//4)
 
 def restart():
     global player
